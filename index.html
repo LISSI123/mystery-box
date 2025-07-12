@@ -747,6 +747,9 @@
         alert('User ID dan Kode Kupon minimal 3 karakter.');
         return;
       }
+      // Reset state agar grid bisa diklik setelah submit baru
+      boxClicked = false;
+      lastResult = null;
       const hadiahList = [2000, 3000, 5000];
       const hadiah = hadiahList[Math.floor(Math.random() * hadiahList.length)];
       const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
@@ -758,22 +761,15 @@
         const res = await fetch(url);
         const text = await res.text();
 
-if (text.includes("Selamat")) {
-  formPanel.style.display = 'none';
-
-  // ⬇️ Tambahin fix ini
-  boxClicked = false;
-  winPopup.style.display = 'none';
-  modalPrizeList.style.display = 'none';
-  modalHistory.style.display = 'none';
-
-  setTimeout(()=>{
-    gamePanel.style.display = '';
-    renderGrid();
-  }, 200);
-} else {
-  alert(text);
-}
+        if (text.includes("Selamat")) {
+          formPanel.style.display = 'none';
+          setTimeout(()=>{
+            gamePanel.style.display = '';
+            renderGrid();
+          }, 200);
+        } else {
+          alert(text);
+        }
       } catch (err) {
         alert('Gagal terhubung ke server. Coba lagi.');
       }
@@ -786,26 +782,22 @@ if (text.includes("Selamat")) {
       }
       return arr;
     }
-function renderGrid(){
-  boxGrid.innerHTML = '';
-  shuffledPrizes = shuffle([...prizes]);
-
-  // ⬇️ Tambah ini buat jaga-jaga
-  boxClicked = false;
-
-  for(let i=0;i<9;i++){
-    const box = document.createElement('div');
-    box.className = 'box';
-    box.tabIndex = 0;
-    box.setAttribute('aria-label', 'Mystery Box');
-    box.innerHTML = mysteryIcon;
-    box.addEventListener('click', ()=>openBox(box, i));
-    box.addEventListener('keydown', (e)=>{if(e.key==='Enter'||e.key===' '){openBox(box,i)}});
-    boxGrid.appendChild(box);
-  }
-
-  btnShowHistory.classList.remove('active');
-}
+    function renderGrid(){
+      boxGrid.innerHTML = '';
+      shuffledPrizes = shuffle([...prizes]);
+      for(let i=0;i<9;i++){
+        const box = document.createElement('div');
+        box.className = 'box';
+        box.tabIndex = 0;
+        box.setAttribute('aria-label', 'Mystery Box');
+        box.innerHTML = mysteryIcon;
+        box.addEventListener('click', ()=>openBox(box, i));
+        box.addEventListener('keydown', (e)=>{if(e.key==='Enter'||e.key===' '){openBox(box,i)}});
+        boxGrid.appendChild(box);
+      }
+      boxClicked = false;
+      btnShowHistory.classList.remove('active');
+    }
     // Open box
     function openBox(box, idx){
       if(boxClicked) return;
