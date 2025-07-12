@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>MYSTERY BOX BELEGENDBET</title>
+  <title>MYSTERY BOX SLOTGOKIL</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -726,7 +726,7 @@
   </script>
   <!-- Top Right Social Icons -->
   <div class="corner-icons">
-    <a href="https://klikblg.com/wa-blb" target="_blank" class="corner-icon" title="WhatsApp">
+    <a href="https://klikblg.com/wa-sg" target="_blank" class="corner-icon" title="WhatsApp">
       <!-- WhatsApp SVG -->
       <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
         <circle cx="16" cy="16" r="16" fill="#25D366"/>
@@ -734,7 +734,7 @@
         <path d="M16 8c4.4 0 8 3.6 8 8 0 1.2-.3 2.4-.8 3.5l2.3 2.3C22.9 22.3 19.9 23.5 16 23.5c-5.5 0-10-4.5-10-10 0-3.3 1.1-6.3 3-8.5l2.3 2.3C13.6 8.3 14.8 8 16 8z" fill="#fff"/>
       </svg>
     </a>
-    <a href="https://klikblg.com/FREEBETBELEGENDBET" target="_blank" class="corner-icon" title="Telegram">
+    <a href="https://t.me/slotgokilofficial" target="_blank" class="corner-icon" title="Telegram">
       <!-- Telegram SVG -->
       <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
         <circle cx="16" cy="16" r="16" fill="#0088cc"/>
@@ -745,7 +745,7 @@
   <div class="main-center">
     <!-- Step 1: Form -->
     <form class="form-panel" id="formPanel" autocomplete="off">
-      <div class="form-title">MYSTERY BOX BELEGENDBET</div>
+      <div class="form-title">MYSTERY BOX SLOTGOKIL</div>
       <div class="form-group">
         <label class="form-label" for="userId">User ID</label>
         <input class="form-input" id="userId" name="userId" type="text" placeholder="Masukkan User ID" required maxlength="32" autocomplete="off">
@@ -795,7 +795,7 @@
       <div class="prize-icon" id="winPrizeIcon"></div>
       <div class="win-title" id="winTitle">🔥 Kamu MENANG! 🎁</div>
       <div class="win-prize" id="winPrizeText"></div>
-      <a href="https://klikblg.com/FREEBETBELEGENDBET" target="_blank" class="btn-claim">CLAIM SEKARANG</a>
+      <a href="https://t.me/freebetslotgokil" target="_blank" class="btn-claim">CLAIM SEKARANG</a>
     </div>
   </div>
   <!-- Modal History -->
@@ -822,7 +822,7 @@
       p.style.opacity=Math.random()*0.2+0.12;
       document.body.appendChild(p);
     }
-
+// Prize data (final only 2k-5k)
     // Daftar hadiah sesuai modal
     const daftarHadiah = [
       { amount: 100000, label: 'MEGA PRIZE', icon: `<svg class="prize-icon" viewBox="0 0 44 44"><ellipse cx="22" cy="34" rx="12" ry="6" fill="#fffbe6" opacity="0.18"/><ellipse cx="22" cy="22" rx="15" ry="15" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><ellipse cx="22" cy="22" rx="10" ry="10" fill="#fffbe6" stroke="#ffd700" stroke-width="2"/></svg>` },
@@ -835,9 +835,9 @@
       { amount: 2000, label: 'REGULAR', icon: `<svg class="prize-icon" viewBox="0 0 44 44"><ellipse cx="22" cy="34" rx="12" ry="6" fill="#fffbe6" opacity="0.18"/><ellipse cx="22" cy="22" rx="10" ry="10" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><ellipse cx="22" cy="22" rx="6" ry="6" fill="#fffbe6" stroke="#ffd700" stroke-width="1.2"/></svg>` },
       { amount: 1000, label: 'REGULAR', icon: `<svg class="prize-icon" viewBox="0 0 44 44"><ellipse cx="22" cy="34" rx="12" ry="6" fill="#fffbe6" opacity="0.18"/><ellipse cx="22" cy="22" rx="15" ry="15" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><ellipse cx="22" cy="22" rx="10" ry="10" fill="#00e6a0" stroke="#ffd700" stroke-width="2"/></svg>` }
     ];
+// Gift box icon (before open)
     const mysteryIcon = `<svg class="mystery-icon" viewBox="0 0 44 44"><rect x="8" y="18" width="28" height="18" rx="6" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><rect x="14" y="8" width="16" height="10" rx="5" fill="#fffbe6" stroke="#ffd700" stroke-width="1.2"/><rect x="20" y="8" width="4" height="28" rx="2" fill="#00e6a0"/><ellipse cx="22" cy="38" rx="10" ry="3" fill="#fffbe6" opacity="0.18"/></svg>`;
-
-    // Element references
+    // Step 1: Form
     const formPanel = document.getElementById('formPanel');
     const gamePanel = document.getElementById('gamePanel');
     const boxGrid = document.getElementById('boxGrid');
@@ -854,47 +854,43 @@
     let boxClicked = false;
     let shuffledPrizes = [];
     let lastResult = null;
-    let hadiahUtamaGlobal = null;
-
-    // Validasi kupon wajib ke Google Sheet
-    // Pencegahan ganda agar form tidak refresh
-    formPanel.addEventListener('submit', function(e){
-      if (e) e.preventDefault();
-      // Cegah submit default pada tombol
-      if (window.event) window.event.returnValue = false;
-      const userId = document.getElementById('userId').value.trim();
+        // Form validation & transition + Google Apps Script integration
+    formPanel.addEventListener('submit', async function(e){
+      e.preventDefault();
+            const userId = document.getElementById('userId').value.trim();
       const kupon = document.getElementById('kupon').value.trim();
       if(userId.length < 3 || kupon.length < 3){
         alert('User ID dan Kode Kupon minimal 3 karakter.');
-        return false;
+        return;
       }
-      // Validasi kupon ke Google Apps Script
+      // Reset state agar grid bisa diklik setelah submit baru
+      boxClicked = false;
+      lastResult = null;
+      const hadiahList = [2000, 3000, 5000];
+      const hadiah = hadiahList[Math.floor(Math.random() * hadiahList.length)];
       const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
         + '?userId=' + encodeURIComponent(userId)
         + '&kupon=' + encodeURIComponent(kupon)
-        + '&mode=validasi';
-      fetch(url)
-        .then(res => res.text())
-        .then(text => {
-          if (text.includes('VALID')) {
-            // Kupon valid, lanjut ke game
-            boxClicked = false;
-            lastResult = null;
+        + '&hadiah=' + encodeURIComponent(hadiah);
+
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+
+        if (text.includes("Selamat")) {
             formPanel.style.display = 'none';
-            gamePanel.style.display = 'flex';
+setTimeout(()=>{
+            gamePanel.style.display = '';
             renderGrid();
+}, 200);
           } else {
-            alert('Kupon tidak valid atau sudah digunakan. Silakan cek kembali.');
-            formPanel.reset();
+            alert(text);
           }
-        })
-        .catch(() => {
-          alert('Gagal terhubung ke server. Silakan coba lagi.');
-        });
-      return false;
+        } catch (err) {
+          alert('Gagal terhubung ke server. Coba lagi.');
+        }
     });
-    // ...existing code...
-    // Step 2: Render grid
+        // Step 2: Render grid
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -908,8 +904,7 @@
       // Hadiah utama: random dari 3k, 4k, 5k
       const hadiahUtamaList = daftarHadiah.filter(h => h.amount === 3000 || h.amount === 4000 || h.amount === 5000);
       const hadiahUtama = hadiahUtamaList[Math.floor(Math.random() * hadiahUtamaList.length)];
-      hadiahUtamaGlobal = hadiahUtama; // Simpan hadiah utama ke variabel global
-      // Hadiah lain: semua hadiah kecuali hadiah utama
+            // Hadiah lain: semua hadiah kecuali hadiah utama
       let hadiahLain = daftarHadiah.filter(h => h.amount !== hadiahUtama.amount);
       while (hadiahLain.length < 8) {
         hadiahLain = hadiahLain.concat(daftarHadiah.filter(h => h.amount !== hadiahUtama.amount));
@@ -929,6 +924,20 @@
         idxLain++;
       }
       shuffledPrizes.hadiahUtama = hadiahUtama;
+for(let i=0;i<9;i++){
+        const box = document.createElement('div');
+        box.className = 'box';
+        box.tabIndex = 0;
+        box.setAttribute('aria-label', 'Mystery Box');
+        box.innerHTML = mysteryIcon;
+        box.addEventListener('click', ()=>openBox(box, i));
+        box.addEventListener('keydown', (e)=>{if(e.key==='Enter'||e.key===' '){openBox(box,i)}});
+        boxGrid.appendChild(box);
+      }
+      boxClicked = false;
+      btnShowHistory.classList.remove('active');
+    }
+    // Open box
 function openBox(box, idx){
   if(boxClicked) return;
   boxClicked = true;
@@ -955,7 +964,7 @@ function openBox(box, idx){
     </g>
   </svg>`;
   box.appendChild(burst);
-  setTimeout(function(){
+  setTimeout(()=>{
     // Buka box yang diklik dulu (hadiah utama)
     box.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div><div class='prize-amount-text'></div>`;
     box.classList.add('opened');
@@ -965,48 +974,62 @@ function openBox(box, idx){
     box.querySelector('.prize-icon').innerHTML = shuffledPrizes[idx].icon;
     box.querySelector('.mystery-icon').innerHTML = mysteryIcon;
     box.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.35rem;font-weight:900;color:#fffbe6;text-shadow:0 0 10px #ffd700,0 0 4px #00e6a0;'>Rp ${shuffledPrizes[idx].amount.toLocaleString('id-ID')}</span>`;
-
-    // Kirim data ke Google Sheet
-    var userId = document.getElementById('userId').value.trim();
-    var kupon = document.getElementById('kupon').value.trim();
-    var hadiah = shuffledPrizes[idx].amount;
-    var url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
-      + '?userId=' + encodeURIComponent(userId)
-      + '&kupon=' + encodeURIComponent(kupon)
-      + '&hadiah=' + encodeURIComponent(hadiah);
-    fetch(url)
-      .then(function(res){ return res.text(); })
-      .then(function(text){
-        if (!text.includes("Selamat")) {
-          alert(text);
-        }
-      })
-      .catch(function(){
-        alert('Gagal terhubung ke server. Coba lagi.');
-      });
-
     // Animasi buka box lain satu per satu
-    var allBoxes = Array.from(document.querySelectorAll('.box'));
-    var delay = 0;
-    for(var i=0;i<allBoxes.length;i++){
+    const allBoxes = Array.from(document.querySelectorAll('.box'));
+    let delay = 0;
+    for(let i=0;i<allBoxes.length;i++){
       if(i===idx) continue;
       delay += 150;
-      setTimeout(function(){
-        // ...existing code for shine and burst animasi box lain...
+      setTimeout(()=>{
+            const b = allBoxes[i];
+            b.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div><div class='prize-amount-text'></div>`;
+            b.classList.add('opened');
+            b.classList.add('disabled');
+            b.tabIndex = -1;
+            if(shuffledPrizes[i]){
+              b.querySelector('.prize-icon').innerHTML = shuffledPrizes[i].icon;
+              b.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.15rem;font-weight:900;color:#fffbe6;text-shadow:0 0 8px #ffd700,0 0 2px #00e6a0;'>Rp ${shuffledPrizes[i].amount.toLocaleString('id-ID')}</span>`;
+            }else{
+              b.querySelector('.prize-icon').innerHTML = zonkIcon;
+              b.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.15rem;font-weight:900;color:#ffd700,text-shadow:0 0 8px #ffd700,0 0 2px #232a3a;'>ZONK</span>`;
+            }
+            b.querySelector('.mystery-icon').innerHTML = mysteryIcon;
+            b.classList.remove('selected');
+            // Animasi shine dan burst untuk setiap box
+            const shine = document.createElement('div');
+            shine.className = 'shine';
+            b.appendChild(shine);
+            const burst = document.createElement('div');
+            burst.className = 'burst';
+            burst.innerHTML = `<svg width="70" height="70" viewBox="0 0 70 70" fill="none">
+              <g>
+                <circle cx="35" cy="35" r="10" fill="#ffd700" opacity="0.7"/>
+                <circle cx="35" cy="10" r="2" fill="#fffbe6"/>
+                <circle cx="35" cy="60" r="2" fill="#fffbe6"/>
+                <circle cx="10" cy="35" r="2" fill="#fffbe6"/>
+                <circle cx="60" cy="35" r="2" fill="#fffbe6"/>
+                <circle cx="20" cy="20" r="1.5" fill="#ffd700"/>
+                <circle cx="50" cy="20" r="1.5" fill="#ffd700"/>
+                <circle cx="20" cy="50" r="1.5" fill="#ffd700"/>
+                <circle cx="50" cy="50" r="1.5" fill="#ffd700"/>
+              </g>
+            </svg>`;
+            b.appendChild(burst);
+            setTimeout(()=>{
+              const burstSVG = b.querySelector('.burst');
+              if(burstSVG) burstSVG.remove();
+            }, 700);
       }, delay);
     }
     // Box yang diklik tetap menampilkan hadiah utama di win popup
-    setTimeout(function(){
+    setTimeout(()=>{
       showWinPopup(shuffledPrizes[idx]);
       btnShowHistory.classList.add('active');
       lastResult = shuffledPrizes[idx];
     }, delay+400);
   }, 600);
 }
-              b.querySelector('.prize-icon').innerHTML = shuffledPrizes[i].icon;
-              b.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.15rem;font-weight:900;color:#fffbe6;text-shadow:0 0 8px #ffd700,0 0 2px #00e6a0;'>Rp ${shuffledPrizes[i].amount.toLocaleString('id-ID')}</span>`;
-// ...existing code...
-    // Show win popup (default)
+                  // Show win popup (default)
     function showWinPopup(prize){
       winPrizeText.textContent = `Hadiah: Rp ${prize.amount.toLocaleString('id-ID')}`;
       winTitle.innerHTML = `🔥 Kamu MENANG! 🎁`;
