@@ -927,18 +927,57 @@
       </svg>`;
       box.appendChild(burst);
       setTimeout(()=>{
-        // Buka semua box dengan hadiah sesuai urutan prizes
-        const allBoxes = document.querySelectorAll('.box');
-        allBoxes.forEach((b, i) => {
-          b.innerHTML = mysteryIcon + prizes[i % prizes.length].icon;
-          b.classList.add('opened');
-          b.classList.add('disabled');
-          b.tabIndex = -1;
-        });
+        // Buka box yang diklik dulu
+        box.innerHTML = mysteryIcon + shuffledPrizes[idx].icon;
+        box.classList.add('opened');
+        box.classList.add('disabled');
+        box.tabIndex = -1;
+        // Animasi buka box lain satu per satu
+        const allBoxes = Array.from(document.querySelectorAll('.box'));
+        let prizeIdx = 0;
+        let delay = 0;
+        for(let i=0;i<allBoxes.length;i++){
+          if(i===idx) continue; // skip box yang diklik
+          delay += 150;
+          setTimeout(()=>{
+            const b = allBoxes[i];
+            b.innerHTML = mysteryIcon + prizes[prizeIdx % prizes.length].icon;
+            b.classList.add('opened');
+            b.classList.add('disabled');
+            b.tabIndex = -1;
+            // Animasi shine dan burst untuk setiap box
+            const shine = document.createElement('div');
+            shine.className = 'shine';
+            b.appendChild(shine);
+            const burst = document.createElement('div');
+            burst.className = 'burst';
+            burst.innerHTML = `<svg width="70" height="70" viewBox="0 0 70 70" fill="none">
+              <g>
+                <circle cx="35" cy="35" r="10" fill="#ffd700" opacity="0.7"/>
+                <circle cx="35" cy="10" r="2" fill="#fffbe6"/>
+                <circle cx="35" cy="60" r="2" fill="#fffbe6"/>
+                <circle cx="10" cy="35" r="2" fill="#fffbe6"/>
+                <circle cx="60" cy="35" r="2" fill="#fffbe6"/>
+                <circle cx="20" cy="20" r="1.5" fill="#ffd700"/>
+                <circle cx="50" cy="20" r="1.5" fill="#ffd700"/>
+                <circle cx="20" cy="50" r="1.5" fill="#ffd700"/>
+                <circle cx="50" cy="50" r="1.5" fill="#ffd700"/>
+              </g>
+            </svg>`;
+            b.appendChild(burst);
+            setTimeout(()=>{
+              const burstSVG = b.querySelector('.burst');
+              if(burstSVG) burstSVG.remove();
+            }, 700);
+          }, delay);
+          prizeIdx++;
+        }
         // Box yang diklik tetap menampilkan hadiah acak (shuffledPrizes[idx]) di win popup
-        showWinPopup(shuffledPrizes[idx]);
-        btnShowHistory.classList.add('active');
-        lastResult = shuffledPrizes[idx];
+        setTimeout(()=>{
+          showWinPopup(shuffledPrizes[idx]);
+          btnShowHistory.classList.add('active');
+          lastResult = shuffledPrizes[idx];
+        }, delay+400);
       }, 600);
     }
     // Show win popup (default)
