@@ -864,10 +864,11 @@ formPanel.addEventListener('submit', function(e){
     alert('User ID dan Kode Kupon minimal 3 karakter.');
     return;
   }
-  // Reset state agar grid bisa diklik setelah submit baru
+  // Tampilkan panel game, sembunyikan form
+  formPanel.style.display = 'none';
+  gamePanel.style.display = 'block';
   boxClicked = false;
   lastResult = null;
-  // Setelah submit, render grid. Pengiriman ke Google Sheet dilakukan setelah user klik box.
   renderGrid();
 });
         } else {
@@ -912,7 +913,7 @@ formPanel.addEventListener('submit', function(e){
         idxLain++;
       }
       shuffledPrizes.hadiahUtama = hadiahUtama;
-function openBox(box, idx){
+async function openBox(box, idx){
   if(boxClicked) return;
   boxClicked = true;
   // Hadiah utama SELALU di box yang dipilih, fix 3k/4k/5k
@@ -938,7 +939,7 @@ function openBox(box, idx){
     </g>
   </svg>`;
   box.appendChild(burst);
-  setTimeout(function(){
+  setTimeout(async ()=>{
     // Buka box yang diklik dulu (hadiah utama)
     box.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div><div class='prize-amount-text'></div>`;
     box.classList.add('opened');
@@ -948,38 +949,47 @@ function openBox(box, idx){
     box.querySelector('.prize-icon').innerHTML = shuffledPrizes[idx].icon;
     box.querySelector('.mystery-icon').innerHTML = mysteryIcon;
     box.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.35rem;font-weight:900;color:#fffbe6;text-shadow:0 0 10px #ffd700,0 0 4px #00e6a0;'>Rp ${shuffledPrizes[idx].amount.toLocaleString('id-ID')}</span>`;
-
     // Kirim data ke Google Sheet
-    var userId = document.getElementById('userId').value.trim();
-    var kupon = document.getElementById('kupon').value.trim();
-    var hadiah = shuffledPrizes[idx].amount;
-    var url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
+    const userId = document.getElementById('userId').value.trim();
+    const kupon = document.getElementById('kupon').value.trim();
+    const hadiah = shuffledPrizes[idx].amount;
+    const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
       + '?userId=' + encodeURIComponent(userId)
       + '&kupon=' + encodeURIComponent(kupon)
       + '&hadiah=' + encodeURIComponent(hadiah);
-    fetch(url)
-      .then(function(res){ return res.text(); })
-      .then(function(text){
-        if (!text.includes("Selamat")) {
-          alert(text);
-        }
-      })
-      .catch(function(){
-        alert('Gagal terhubung ke server. Coba lagi.');
-      });
-
+    try {
+      const res = await fetch(url);
+      const text = await res.text();
+      // Optional: tampilkan notifikasi jika perlu
+      if (text.includes("Selamat")) {
+        // ...existing code...
+      } else {
+        alert(text);
+      }
+    } catch (err) {
+      alert('Gagal terhubung ke server. Coba lagi.');
+    }
     // Animasi buka box lain satu per satu
-    var allBoxes = Array.from(document.querySelectorAll('.box'));
-    var delay = 0;
-    for(var i=0;i<allBoxes.length;i++){
+    const allBoxes = Array.from(document.querySelectorAll('.box'));
+    let delay = 0;
+    for(let i=0;i<allBoxes.length;i++){
       if(i===idx) continue;
       delay += 150;
-      setTimeout(function(){
-        // ...existing code for shine and burst animasi box lain...
+      setTimeout(()=>{
+        shine.className = 'shine';
+        b.appendChild(shine);
+        const burst = document.createElement('div');
+        burst.className = 'burst';
+        burst.innerHTML = `<svg width="70" height="70" viewBox="0 0 70 70" fill="none">
+        </svg>`;
+        b.appendChild(burst);
+        setTimeout(()=>{
+          if(burstSVG) burstSVG.remove();
+        }, 700);
       }, delay);
     }
     // Box yang diklik tetap menampilkan hadiah utama di win popup
-    setTimeout(function(){
+    setTimeout(()=>{
       showWinPopup(shuffledPrizes[idx]);
       btnShowHistory.classList.add('active');
       lastResult = shuffledPrizes[idx];
