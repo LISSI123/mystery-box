@@ -779,22 +779,26 @@
       }
       return arr;
     }
-    function renderGrid(){
-      boxGrid.innerHTML = '';
-      shuffledPrizes = shuffle([...prizes]);
-      for(let i=0;i<9;i++){
-        const box = document.createElement('div');
-        box.className = 'box';
-        box.tabIndex = 0;
-        box.setAttribute('aria-label', 'Mystery Box');
-        box.innerHTML = mysteryIcon;
-        box.addEventListener('click', ()=>openBox(box, i));
-        box.addEventListener('keydown', (e)=>{if(e.key==='Enter'||e.key===' '){openBox(box,i)}});
-        boxGrid.appendChild(box);
-      }
-      boxClicked = false;
-      btnShowHistory.classList.remove('active');
-    }
+function renderGrid(){
+  boxGrid.innerHTML = '';
+  shuffledPrizes = shuffle([...prizes]);
+
+  // ⬇️ Tambah ini buat jaga-jaga
+  boxClicked = false;
+
+  for(let i=0;i<9;i++){
+    const box = document.createElement('div');
+    box.className = 'box';
+    box.tabIndex = 0;
+    box.setAttribute('aria-label', 'Mystery Box');
+    box.innerHTML = mysteryIcon;
+    box.addEventListener('click', ()=>openBox(box, i));
+    box.addEventListener('keydown', (e)=>{if(e.key==='Enter'||e.key===' '){openBox(box,i)}});
+    boxGrid.appendChild(box);
+  }
+
+  btnShowHistory.classList.remove('active');
+}
     // Open box
     function openBox(box, idx){
       if(boxClicked) return;
