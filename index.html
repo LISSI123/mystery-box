@@ -422,9 +422,9 @@
       inset: 0;
       background: rgba(24,28,42,0.92);
       z-index: 90;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       animation: fadeIn .3s;
     }
     .modal, .modal-history {
@@ -439,6 +439,7 @@
       border: 2.5px solid #ffd700;
       animation: popupScale .5s cubic-bezier(.4,2,.3,1);
       filter: drop-shadow(0 0 16px #ffd70022);
+      margin: auto;
     }
     .modal-title {
       font-size: 1.25rem;
@@ -856,7 +857,8 @@
     let lastResult = null;
     let hadiahUtamaGlobal = null; // Hadiah utama yang akan dikirim ke Google Sheet
     // Form validation & transition + Google Apps Script integration
-formPanel.addEventListener('submit', function(e){
+const kuponValidList = ['BLG123', 'BLG456', 'BLG789']; // Ganti sesuai daftar kupon valid Anda
+formPanel.addEventListener('submit', async function(e){
   e.preventDefault();
   const userId = document.getElementById('userId').value.trim();
   const kupon = document.getElementById('kupon').value.trim();
@@ -864,12 +866,28 @@ formPanel.addEventListener('submit', function(e){
     alert('User ID dan Kode Kupon minimal 3 karakter.');
     return;
   }
-  // Tampilkan panel game, sembunyikan form
-  formPanel.style.display = 'none';
-  gamePanel.style.display = 'block';
-  boxClicked = false;
-  lastResult = null;
-  renderGrid();
+  // Validasi kupon ke Google Apps Script
+  try {
+    const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
+      + '?checkKupon=1'
+      + '&kupon=' + encodeURIComponent(kupon);
+    const res = await fetch(url);
+    const text = await res.text();
+    if(text.trim().toLowerCase() === 'valid'){
+      // Tampilkan panel game, sembunyikan form
+      formPanel.style.display = 'none';
+      gamePanel.style.display = 'block';
+      boxClicked = false;
+      lastResult = null;
+      renderGrid();
+    } else {
+      alert('Kode Kupon tidak valid!');
+      return;
+    }
+  } catch(err){
+    alert('Gagal cek kupon. Coba lagi.');
+    return;
+  }
 });
     // Step 2: Render grid
     function shuffle(arr) {
