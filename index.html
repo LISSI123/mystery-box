@@ -839,63 +839,58 @@
     // Gift box icon (before open)
     const mysteryIcon = `<svg class="mystery-icon" viewBox="0 0 44 44"><rect x="8" y="18" width="28" height="18" rx="6" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><rect x="14" y="8" width="16" height="10" rx="5" fill="#fffbe6" stroke="#ffd700" stroke-width="1.2"/><rect x="20" y="8" width="4" height="28" rx="2" fill="#00e6a0"/><ellipse cx="22" cy="38" rx="10" ry="3" fill="#fffbe6" opacity="0.18"/></svg>`;
     // Step 1: Form
-    const formPanel = document.getElementById('formPanel');
-    const gamePanel = document.getElementById('gamePanel');
-    const boxGrid = document.getElementById('boxGrid');
-    const winPopup = document.getElementById('winPopup');
-    const winPrizeText = document.getElementById('winPrizeText');
-    const winTitle = document.getElementById('winTitle');
-    const winPrizeIcon = document.getElementById('winPrizeIcon');
-    const btnShowHistory = document.getElementById('btnShowHistory');
-    const modalHistory = document.getElementById('modalHistory');
-    const historyTanggal = document.getElementById('historyTanggal');
-    const historyUser = document.getElementById('historyUser');
-    const historyKupon = document.getElementById('historyKupon');
-    const historyPrize = document.getElementById('historyPrize');
-    let boxClicked = false;
-    let shuffledPrizes = [];
-    let lastResult = null;
-    let hadiahUtamaGlobal = null; // Hadiah utama yang akan dikirim ke Google Sheet
+const formPanel = document.getElementById('formPanel');
+const gamePanel = document.getElementById('gamePanel');
+const boxGrid = document.getElementById('boxGrid');
+const winPopup = document.getElementById('winPopup');
+const winPrizeText = document.getElementById('winPrizeText');
+const winTitle = document.getElementById('winTitle');
+const winPrizeIcon = document.getElementById('winPrizeIcon');
+const btnShowHistory = document.getElementById('btnShowHistory');
+const modalHistory = document.getElementById('modalHistory');
+const historyTanggal = document.getElementById('historyTanggal');
+const historyUser = document.getElementById('historyUser');
+const historyKupon = document.getElementById('historyKupon');
+const historyPrize = document.getElementById('historyPrize');
+let boxClicked = false;
+let shuffledPrizes = [];
+let lastResult = null;
+let hadiahUtamaGlobal = null; // Hadiah utama yang akan dikirim ke Google Sheet
+// Pastikan semua panel/modal/tombol disembunyikan di awal
+gamePanel.style.display = 'none';
+btnShowHistory.classList.remove('active');
+modalHistory.style.display = 'none';
     // Form validation & transition + Google Apps Script integration
 const kuponValidList = ['BLG123', 'BLG456', 'BLG789']; // Ganti sesuai daftar kupon valid Anda
 formPanel.addEventListener('submit', function(e){
-  try {
-    e.preventDefault();
-    const userId = document.getElementById('userId').value.trim();
-    const kupon = document.getElementById('kupon').value.trim();
-    if(userId.length < 3 || kupon.length < 3){
-      alert('User ID dan Kode Kupon minimal 3 karakter.');
-      return false;
-    }
-    // Validasi kupon ke Google Apps Script
-    const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
-      + '?checkKupon=1'
-      + '&kupon=' + encodeURIComponent(kupon);
-    fetch(url)
-      .then(res => res.text())
-      .then(text => {
-        if(text.trim().toLowerCase() === 'valid'){
-          try {
-            formPanel.style.display = 'none';
-            gamePanel.style.display = 'block';
-            boxClicked = false;
-            lastResult = null;
-            renderGrid();
-          } catch (err) {
-            alert('Terjadi error saat menampilkan game. Silakan refresh dan coba lagi.');
-          }
-        } else {
-          alert('Kode Kupon tidak valid!');
-        }
-      })
-      .catch(err => {
-        alert('Gagal cek kupon. Silakan cek koneksi internet Anda atau hubungi admin.');
-      });
-    return false;
-  } catch (err) {
-    alert('Terjadi error pada aplikasi. Silakan refresh dan coba lagi.');
+  e.preventDefault();
+  const userId = document.getElementById('userId').value.trim();
+  const kupon = document.getElementById('kupon').value.trim();
+  if(userId.length < 3 || kupon.length < 3){
+    alert('User ID dan Kode Kupon minimal 3 karakter.');
     return false;
   }
+  // Validasi kupon ke Google Apps Script
+  const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
+    + '?checkKupon=1'
+    + '&kupon=' + encodeURIComponent(kupon);
+  fetch(url)
+    .then(res => res.text())
+    .then(text => {
+      if(text.trim().toLowerCase() === 'valid'){
+        formPanel.style.display = 'none';
+        gamePanel.style.display = 'block';
+        boxClicked = false;
+        lastResult = null;
+        renderGrid();
+      } else {
+        alert('Kode Kupon tidak valid!');
+      }
+    })
+    .catch(err => {
+      alert('Gagal cek kupon. Silakan cek koneksi internet Anda atau hubungi admin.');
+    });
+  return false;
 });
     // Step 2: Render grid
     function shuffle(arr) {
