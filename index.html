@@ -924,8 +924,8 @@
         box.className = 'box';
         box.tabIndex = 0;
         box.setAttribute('aria-label', 'Mystery Box');
-        // Tampilkan hadiah langsung di grid (sebelum dibuka, hanya Rp dan blur)
-        box.innerHTML = `<span class='prize-amount-text' style='filter:blur(2px);opacity:0.7;'>Rp ${shuffledPrizes[i].amount.toLocaleString('id-ID')}</span>` + mysteryIcon;
+        // Sebelum diklik, hanya tampil ikon misteri
+        box.innerHTML = mysteryIcon;
         box.addEventListener('click', ()=>openBox(box, i));
         box.addEventListener('keydown', (e)=>{if(e.key==='Enter'||e.key===' '){openBox(box,i)}});
         boxGrid.appendChild(box);
