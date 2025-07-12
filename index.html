@@ -295,6 +295,13 @@
       opacity: 0.5;
       filter: grayscale(0.5) blur(1px);
     }
+    .box.selected {
+      border: 4px solid #00e6a0;
+      box-shadow: 0 0 40px 16px #00e6a0cc, 0 0 24px 8px #ffd700cc;
+      background: linear-gradient(135deg, #00e6a0 0%, #ffd700 100%, #fffbe6 100%);
+      filter: brightness(1.35) drop-shadow(0 0 16px #00e6a0cc);
+      z-index: 30;
+    }
     .box .shine {
       position: absolute;
       top: -60%;
@@ -897,7 +904,12 @@
       const hadiahUtamaList = daftarHadiah.filter(h => h.amount === 3000 || h.amount === 4000 || h.amount === 5000);
       const hadiahUtama = hadiahUtamaList[Math.floor(Math.random() * hadiahUtamaList.length)];
       // Hadiah lain: semua hadiah kecuali hadiah utama
-      const hadiahLain = daftarHadiah.filter(h => h.amount !== hadiahUtama.amount);
+      let hadiahLain = daftarHadiah.filter(h => h.amount !== hadiahUtama.amount);
+      // Jika hadiahLain kurang dari 8, ulangi dari awal agar tidak ada box kosong
+      while (hadiahLain.length < 8) {
+        hadiahLain = hadiahLain.concat(daftarHadiah.filter(h => h.amount !== hadiahUtama.amount));
+      }
+      hadiahLain = hadiahLain.slice(0,8);
       // Acak posisi grid
       const posisiAcak = Array.from({length: 9}, (_, i) => i);
       for (let i = posisiAcak.length - 1; i > 0; i--) {
@@ -906,10 +918,9 @@
       }
       // shuffledPrizes: hadiah utama di posisi yang akan dipilih user (nanti di openBox), hadiah lain di posisi lain
       shuffledPrizes = Array(9).fill(null);
-      // Sementara, isi semua dengan hadiah lain
       let idxLain = 0;
       for (let i = 0; i < 9; i++) {
-        shuffledPrizes[posisiAcak[i]] = hadiahLain[idxLain];
+        shuffledPrizes[posisiAcak[i]] = idxLain < 8 ? hadiahLain[idxLain] : null;
         idxLain++;
       }
       // Simpan hadiah utama, nanti akan dipasang di box yang dipilih user
@@ -931,7 +942,7 @@
     function openBox(box, idx){
       if(boxClicked) return;
       boxClicked = true;
-      // Hadiah utama SELALU di box yang dipilih
+      // Hadiah utama SELALU di box yang dipilih, fix 3k/4k/5k
       shuffledPrizes[idx] = shuffledPrizes.hadiahUtama;
       // Animate shine
       const shine = document.createElement('div');
