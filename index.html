@@ -935,10 +935,14 @@
       box.appendChild(burst);
       setTimeout(()=>{
         // Buka box yang diklik dulu (hadiah utama)
-        box.innerHTML = mysteryIcon + shuffledPrizes[idx].icon;
+        box.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div>`;
         box.classList.add('opened');
         box.classList.add('disabled');
         box.tabIndex = -1;
+        // Isi prize-icon dengan SVG hadiah utama
+        box.querySelector('.prize-icon').innerHTML = shuffledPrizes[idx].icon;
+        // Isi mystery-icon dengan SVG box sebelum dibuka
+        box.querySelector('.mystery-icon').innerHTML = mysteryIcon;
         // Animasi buka box lain satu per satu, hadiah sesuai urutan daftarHadiah
         const allBoxes = Array.from(document.querySelectorAll('.box'));
         let hadiahIdx = 0;
@@ -948,10 +952,12 @@
           delay += 150;
           setTimeout(()=>{
             const b = allBoxes[i];
-            b.innerHTML = mysteryIcon + daftarHadiah[hadiahIdx % daftarHadiah.length].icon;
+            b.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div>`;
             b.classList.add('opened');
             b.classList.add('disabled');
             b.tabIndex = -1;
+            b.querySelector('.prize-icon').innerHTML = daftarHadiah[hadiahIdx % daftarHadiah.length].icon;
+            b.querySelector('.mystery-icon').innerHTML = mysteryIcon;
             // Animasi shine dan burst untuk setiap box
             const shine = document.createElement('div');
             shine.className = 'shine';
