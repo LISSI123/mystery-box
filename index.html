@@ -758,15 +758,22 @@
         const res = await fetch(url);
         const text = await res.text();
 
-        if (text.includes("Selamat")) {
-          formPanel.style.display = 'none';
-          setTimeout(()=>{
-            gamePanel.style.display = '';
-            renderGrid();
-          }, 200);
-        } else {
-          alert(text);
-        }
+if (text.includes("Selamat")) {
+  formPanel.style.display = 'none';
+
+  // ⬇️ Tambahin fix ini
+  boxClicked = false;
+  winPopup.style.display = 'none';
+  modalPrizeList.style.display = 'none';
+  modalHistory.style.display = 'none';
+
+  setTimeout(()=>{
+    gamePanel.style.display = '';
+    renderGrid();
+  }, 200);
+} else {
+  alert(text);
+}
       } catch (err) {
         alert('Gagal terhubung ke server. Coba lagi.');
       }
