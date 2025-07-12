@@ -184,7 +184,7 @@
       color: #ffd700;
       background: linear-gradient(90deg, #ffd700 0%, #00e6a0 100%);
     }
-    /* Step 2: Game */
+    /* Step 2: Grid */
     .game-panel {
       background: rgba(24,28,42,0.55);
       border-radius: 28px;
@@ -700,6 +700,18 @@
     </div>
   </div>
   <script>
+    // Floating particles
+    for(let i=0;i<12;i++){
+      const p=document.createElement('div');
+      p.className='particle';
+      p.style.width=p.style.height=(Math.random()*12+8)+'px';
+      p.style.left=(Math.random()*100)+'vw';
+      p.style.top=(Math.random()*100)+'vh';
+      p.style.background=`radial-gradient(circle, #${['ffd700','00e6a0','fffbe6'][Math.floor(Math.random()*3)]} 0%, transparent 80%)`;
+      p.style.animationDuration=(Math.random()*8+8)+'s';
+      p.style.opacity=Math.random()*0.2+0.12;
+      document.body.appendChild(p);
+    }
     // Prize data (final only 2k-5k)
     const prizes = [
       { amount: 2000, icon: `<svg class="prize-icon" viewBox="0 0 44 44"><ellipse cx="22" cy="34" rx="12" ry="6" fill="#fffbe6" opacity="0.18"/><path d="M14 28 Q22 38 30 28 Q22 34 14 28" fill="#ffd700"/><ellipse cx="22" cy="22" rx="10" ry="10" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><ellipse cx="22" cy="22" rx="6" ry="6" fill="#fffbe6" stroke="#ffd700" stroke-width="1.2"/></svg>` },
@@ -762,15 +774,17 @@
         alert('Gagal terhubung ke server. Coba lagi.');
       }
     });
-    // Step 2: Render grid (FIXED: Selalu 9 hadiah random)
+    // Step 2: Render grid
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
     function renderGrid(){
       boxGrid.innerHTML = '';
-      // Buat array 9 elemen berisi hadiah random
-      shuffledPrizes = [];
-      for (let i = 0; i < 9; i++) {
-        const prize = prizes[Math.floor(Math.random() * prizes.length)];
-        shuffledPrizes.push(prize);
-      }
+      shuffledPrizes = shuffle([...prizes]);
       for(let i=0;i<9;i++){
         const box = document.createElement('div');
         box.className = 'box';
@@ -810,14 +824,16 @@
       </svg>`;
       box.appendChild(burst);
       setTimeout(()=>{
-        box.innerHTML = mysteryIcon + shuffledPrizes[idx].icon;
-        box.classList.add('opened');
-        showWinPopup(shuffledPrizes[idx]);
-        // Disable all boxes
-        document.querySelectorAll('.box').forEach(b=>{
+        // Buka semua box dengan hadiah sesuai urutan prizes
+        const allBoxes = document.querySelectorAll('.box');
+        allBoxes.forEach((b, i) => {
+          b.innerHTML = mysteryIcon + prizes[i % prizes.length].icon;
+          b.classList.add('opened');
           b.classList.add('disabled');
           b.tabIndex = -1;
         });
+        // Box yang diklik tetap menampilkan hadiah acak (shuffledPrizes[idx]) di win popup
+        showWinPopup(shuffledPrizes[idx]);
         btnShowHistory.classList.add('active');
         lastResult = shuffledPrizes[idx];
       }, 600);
