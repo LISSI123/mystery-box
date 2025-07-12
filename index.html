@@ -1148,18 +1148,21 @@ formPanel.addEventListener('submit', function(e){
       }
     });
     // Modal History
-    btnShowHistory.onclick = function(){
-      if(!lastResult) return;
-      const userId = document.getElementById('userId').value.trim();
-      const kupon = document.getElementById('kupon').value.trim();
-      const now = new Date();
-      const tanggal = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-      historyTanggal.textContent = tanggal;
-      historyUser.textContent = userId;
-      historyKupon.textContent = kupon;
-      historyPrize.textContent = `Rp ${lastResult.amount.toLocaleString('id-ID')}`;
-      modalHistory.style.display = 'flex';
-    }
+// Pastikan tombol dan modal history disembunyikan di awal
+btnShowHistory.classList.remove('active');
+modalHistory.style.display = 'none';
+btnShowHistory.onclick = function(){
+  if(!lastResult) return;
+  const userId = document.getElementById('userId').value.trim();
+  const kupon = document.getElementById('kupon').value.trim();
+  const now = new Date();
+  const tanggal = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+  historyTanggal.textContent = tanggal;
+  historyUser.textContent = userId;
+  historyKupon.textContent = kupon;
+  historyPrize.textContent = `Rp ${lastResult.amount.toLocaleString('id-ID')}`;
+  modalHistory.style.display = 'flex';
+}
     document.getElementById('btnCloseHistory').onclick = ()=>{modalHistory.style.display='none';};
     modalHistory.addEventListener('click', function(e){
       if(e.target===modalHistory) modalHistory.style.display='none';
