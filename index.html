@@ -822,7 +822,7 @@
       p.style.opacity=Math.random()*0.2+0.12;
       document.body.appendChild(p);
     }
-    // Prize data (final only 2k-5k)
+
     // Daftar hadiah sesuai modal
     const daftarHadiah = [
       { amount: 100000, label: 'MEGA PRIZE', icon: `<svg class="prize-icon" viewBox="0 0 44 44"><ellipse cx="22" cy="34" rx="12" ry="6" fill="#fffbe6" opacity="0.18"/><ellipse cx="22" cy="22" rx="15" ry="15" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><ellipse cx="22" cy="22" rx="10" ry="10" fill="#fffbe6" stroke="#ffd700" stroke-width="2"/></svg>` },
@@ -835,9 +835,9 @@
       { amount: 2000, label: 'REGULAR', icon: `<svg class="prize-icon" viewBox="0 0 44 44"><ellipse cx="22" cy="34" rx="12" ry="6" fill="#fffbe6" opacity="0.18"/><ellipse cx="22" cy="22" rx="10" ry="10" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><ellipse cx="22" cy="22" rx="6" ry="6" fill="#fffbe6" stroke="#ffd700" stroke-width="1.2"/></svg>` },
       { amount: 1000, label: 'REGULAR', icon: `<svg class="prize-icon" viewBox="0 0 44 44"><ellipse cx="22" cy="34" rx="12" ry="6" fill="#fffbe6" opacity="0.18"/><ellipse cx="22" cy="22" rx="15" ry="15" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><ellipse cx="22" cy="22" rx="10" ry="10" fill="#00e6a0" stroke="#ffd700" stroke-width="2"/></svg>` }
     ];
-    // Gift box icon (before open)
     const mysteryIcon = `<svg class="mystery-icon" viewBox="0 0 44 44"><rect x="8" y="18" width="28" height="18" rx="6" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><rect x="14" y="8" width="16" height="10" rx="5" fill="#fffbe6" stroke="#ffd700" stroke-width="1.2"/><rect x="20" y="8" width="4" height="28" rx="2" fill="#00e6a0"/><ellipse cx="22" cy="38" rx="10" ry="3" fill="#fffbe6" opacity="0.18"/></svg>`;
-    // Step 1: Form
+
+    // Element references
     const formPanel = document.getElementById('formPanel');
     const gamePanel = document.getElementById('gamePanel');
     const boxGrid = document.getElementById('boxGrid');
@@ -854,40 +854,42 @@
     let boxClicked = false;
     let shuffledPrizes = [];
     let lastResult = null;
-    let hadiahUtamaGlobal = null; // Hadiah utama yang akan dikirim ke Google Sheet
-    // Form validation & transition + Google Apps Script integration
-formPanel.addEventListener('submit', function(e){
-  e.preventDefault();
-  const userId = document.getElementById('userId').value.trim();
-  const kupon = document.getElementById('kupon').value.trim();
-  if(userId.length < 3 || kupon.length < 3){
-    alert('User ID dan Kode Kupon minimal 3 karakter.');
-    return;
-  }
-  // Validasi kupon ke Google Apps Script
-  const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
-    + '?userId=' + encodeURIComponent(userId)
-    + '&kupon=' + encodeURIComponent(kupon)
-    + '&mode=validasi';
-  fetch(url)
-    .then(res => res.text())
-    .then(text => {
-      if (text.includes('VALID')) {
-        // Kupon valid, lanjut ke game
-        boxClicked = false;
-        lastResult = null;
-        formPanel.style.display = 'none';
-        gamePanel.style.display = 'flex';
-        renderGrid();
-      } else {
-        alert('Kupon tidak valid atau sudah digunakan. Silakan cek kembali.');
+    let hadiahUtamaGlobal = null;
+
+    // Validasi kupon wajib ke Google Sheet
+    formPanel.addEventListener('submit', function(e){
+      e.preventDefault();
+      const userId = document.getElementById('userId').value.trim();
+      const kupon = document.getElementById('kupon').value.trim();
+      if(userId.length < 3 || kupon.length < 3){
+        alert('User ID dan Kode Kupon minimal 3 karakter.');
+        return;
       }
-    })
-    .catch(() => {
-      alert('Gagal terhubung ke server. Silakan coba lagi.');
+      // Validasi kupon ke Google Apps Script
+      const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
+        + '?userId=' + encodeURIComponent(userId)
+        + '&kupon=' + encodeURIComponent(kupon)
+        + '&mode=validasi';
+      fetch(url)
+        .then(res => res.text())
+        .then(text => {
+          if (text.includes('VALID')) {
+            // Kupon valid, lanjut ke game
+            boxClicked = false;
+            lastResult = null;
+            formPanel.style.display = 'none';
+            gamePanel.style.display = 'flex';
+            renderGrid();
+          } else {
+            alert('Kupon tidak valid atau sudah digunakan. Silakan cek kembali.');
+            formPanel.reset();
+          }
+        })
+        .catch(() => {
+          alert('Gagal terhubung ke server. Silakan coba lagi.');
+        });
     });
-});
-// ...existing code...
+    // ...existing code...
     // Step 2: Render grid
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
