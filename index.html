@@ -893,8 +893,14 @@
     }
     function renderGrid(){
       boxGrid.innerHTML = '';
-      // Hadiah utama random dari daftarHadiah
-      shuffledPrizes = shuffle([...daftarHadiah]);
+      // Hadiah utama random dari 3k, 4k, 5k, tapi urutan box selalu sesuai daftarHadiah
+      const hadiahUtamaList = daftarHadiah.filter(h => h.amount === 3000 || h.amount === 4000 || h.amount === 5000);
+      const hadiahUtama = hadiahUtamaList[Math.floor(Math.random() * hadiahUtamaList.length)];
+      // Urutan box = daftarHadiah
+      shuffledPrizes = [...daftarHadiah];
+      // Hadiah utama di posisi acak
+      const idxUtama = Math.floor(Math.random() * 9);
+      shuffledPrizes[idxUtama] = hadiahUtama;
       for(let i=0;i<9;i++){
         const box = document.createElement('div');
         box.className = 'box';
@@ -935,14 +941,16 @@
       box.appendChild(burst);
       setTimeout(()=>{
         // Buka box yang diklik dulu (hadiah utama)
-        box.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div>`;
-        box.classList.add('opened');
-        box.classList.add('disabled');
-        box.tabIndex = -1;
-        // Isi prize-icon dengan SVG hadiah utama
-        box.querySelector('.prize-icon').innerHTML = shuffledPrizes[idx].icon;
-        // Isi mystery-icon dengan SVG box sebelum dibuka
-        box.querySelector('.mystery-icon').innerHTML = mysteryIcon;
+      box.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div><div class='prize-amount-text'></div>`;
+      box.classList.add('opened');
+      box.classList.add('disabled');
+      box.tabIndex = -1;
+      // Isi prize-icon dengan SVG hadiah utama
+      box.querySelector('.prize-icon').innerHTML = shuffledPrizes[idx].icon;
+      // Isi mystery-icon dengan SVG box sebelum dibuka
+      box.querySelector('.mystery-icon').innerHTML = mysteryIcon;
+      // Tampilkan angka hadiah di bawah ikon
+      box.querySelector('.prize-amount-text').textContent = `Rp ${shuffledPrizes[idx].amount.toLocaleString('id-ID')}`;
         // Animasi buka box lain satu per satu, hadiah sesuai urutan daftarHadiah
         const allBoxes = Array.from(document.querySelectorAll('.box'));
         let hadiahIdx = 0;
@@ -952,12 +960,13 @@
           delay += 150;
           setTimeout(()=>{
             const b = allBoxes[i];
-            b.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div>`;
+            b.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div><div class='prize-amount-text'></div>`;
             b.classList.add('opened');
             b.classList.add('disabled');
             b.tabIndex = -1;
-            b.querySelector('.prize-icon').innerHTML = daftarHadiah[hadiahIdx % daftarHadiah.length].icon;
+            b.querySelector('.prize-icon').innerHTML = shuffledPrizes[i].icon;
             b.querySelector('.mystery-icon').innerHTML = mysteryIcon;
+            b.querySelector('.prize-amount-text').textContent = `Rp ${shuffledPrizes[i].amount.toLocaleString('id-ID')}`;
             // Animasi shine dan burst untuk setiap box
             const shine = document.createElement('div');
             shine.className = 'shine';
@@ -983,7 +992,6 @@
               if(burstSVG) burstSVG.remove();
             }, 700);
           }, delay);
-          hadiahIdx++;
         }
         // Box yang diklik tetap menampilkan hadiah utama di win popup
         setTimeout(()=>{
