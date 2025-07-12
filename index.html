@@ -913,14 +913,12 @@
     }
     function renderGrid(){
       boxGrid.innerHTML = '';
-      // Hadiah utama random dari 3k, 4k, 5k, tapi urutan box selalu sesuai daftarHadiah
+      // Hadiah utama random dari 3k, 4k, 5k
       const hadiahUtamaList = daftarHadiah.filter(h => h.amount === 3000 || h.amount === 4000 || h.amount === 5000);
       const hadiahUtama = hadiahUtamaList[Math.floor(Math.random() * hadiahUtamaList.length)];
-      // Urutan box = daftarHadiah
-      shuffledPrizes = [...daftarHadiah];
-      // Hadiah utama di posisi acak
+      // Urutan box = daftarHadiah, tapi box pilihan user (idxUtama) diganti hadiahUtama
       const idxUtama = Math.floor(Math.random() * 9);
-      shuffledPrizes[idxUtama] = hadiahUtama;
+      shuffledPrizes = daftarHadiah.map((h, i) => i === idxUtama ? hadiahUtama : h);
       for(let i=0;i<9;i++){
         const box = document.createElement('div');
         box.className = 'box';
@@ -989,11 +987,7 @@
             b.querySelector('.mystery-icon').innerHTML = mysteryIcon;
             b.querySelector('.prize-amount-text').textContent = `Rp ${shuffledPrizes[i].amount.toLocaleString('id-ID')}`;
             // Hanya box yang dipilih user diberi tanda
-            if(i === idx) {
-              b.classList.add('selected');
-            } else {
-              b.classList.remove('selected');
-            }
+            b.classList.remove('selected');
             // Animasi shine dan burst untuk setiap box
             const shine = document.createElement('div');
             shine.className = 'shine';
