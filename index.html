@@ -858,36 +858,35 @@
     let hadiahUtamaGlobal = null; // Hadiah utama yang akan dikirim ke Google Sheet
     // Form validation & transition + Google Apps Script integration
 const kuponValidList = ['BLG123', 'BLG456', 'BLG789']; // Ganti sesuai daftar kupon valid Anda
-formPanel.addEventListener('submit', async function(e){
+formPanel.addEventListener('submit', function(e){
   e.preventDefault();
   const userId = document.getElementById('userId').value.trim();
   const kupon = document.getElementById('kupon').value.trim();
   if(userId.length < 3 || kupon.length < 3){
     alert('User ID dan Kode Kupon minimal 3 karakter.');
-    return;
+    return false;
   }
   // Validasi kupon ke Google Apps Script
-  try {
-    const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
-      + '?checkKupon=1'
-      + '&kupon=' + encodeURIComponent(kupon);
-    const res = await fetch(url);
-    const text = await res.text();
-    if(text.trim().toLowerCase() === 'valid'){
-      // Tampilkan panel game, sembunyikan form
-      formPanel.style.display = 'none';
-      gamePanel.style.display = 'block';
-      boxClicked = false;
-      lastResult = null;
-      renderGrid();
-    } else {
-      alert('Kode Kupon tidak valid!');
-      return;
-    }
-  } catch(err){
-    alert('Gagal cek kupon. Coba lagi.');
-    return;
-  }
+  const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
+    + '?checkKupon=1'
+    + '&kupon=' + encodeURIComponent(kupon);
+  fetch(url)
+    .then(res => res.text())
+    .then(text => {
+      if(text.trim().toLowerCase() === 'valid'){
+        formPanel.style.display = 'none';
+        gamePanel.style.display = 'block';
+        boxClicked = false;
+        lastResult = null;
+        renderGrid();
+      } else {
+        alert('Kode Kupon tidak valid!');
+      }
+    })
+    .catch(err => {
+      alert('Gagal cek kupon. Silakan cek koneksi internet Anda atau hubungi admin.');
+    });
+  return false;
 });
     // Step 2: Render grid
     function shuffle(arr) {
