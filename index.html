@@ -893,15 +893,19 @@
     }
     function renderGrid(){
       boxGrid.innerHTML = '';
-      // Hadiah utama random dari 3k, 4k, 5k (bukan 50k)
-      const hadiahUtamaList = daftarHadiah.filter(h => h.amount === 3000 || h.amount === 4000 || h.amount === 5000);
-      // Pilih salah satu hadiah utama
-      const hadiahUtama = hadiahUtamaList[Math.floor(Math.random() * hadiahUtamaList.length)];
-      // Pilih posisi box utama
-      const idxUtama = Math.floor(Math.random() * 9);
-      // Copy daftarHadiah, lalu ganti posisi idxUtama dengan hadiahUtama
-      shuffledPrizes = daftarHadiah.slice();
-      shuffledPrizes[idxUtama] = hadiahUtama;
+      // Hadiah urut sesuai daftarHadiah
+      const hadiahList = daftarHadiah.slice();
+      // Acak posisi hadiah di grid
+      const posisiAcak = Array.from({length: 9}, (_, i) => i);
+      for (let i = posisiAcak.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [posisiAcak[i], posisiAcak[j]] = [posisiAcak[j], posisiAcak[i]];
+      }
+      // shuffledPrizes: hadiah urut, posisi di grid acak
+      shuffledPrizes = [];
+      for (let i = 0; i < 9; i++) {
+        shuffledPrizes[posisiAcak[i]] = hadiahList[i];
+      }
       for(let i=0;i<9;i++){
         const box = document.createElement('div');
         box.className = 'box';
@@ -952,8 +956,8 @@
       box.querySelector('.prize-icon').innerHTML = shuffledPrizes[idx].icon;
       // Isi mystery-icon dengan SVG box sebelum dibuka
       box.querySelector('.mystery-icon').innerHTML = mysteryIcon;
-      // Tampilkan angka hadiah di bawah ikon, styling rapi
-      box.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.25rem;font-weight:900;color:#ffd700;text-shadow:0 0 6px #00e6a0,0 0 2px #fffbe6;'>Rp ${shuffledPrizes[idx].amount.toLocaleString('id-ID')}</span>`;
+      // Tampilkan angka hadiah di bawah ikon, styling lebih terang dan jelas
+      box.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.35rem;font-weight:900;color:#fffbe6;text-shadow:0 0 10px #ffd700,0 0 4px #00e6a0;'>Rp ${shuffledPrizes[idx].amount.toLocaleString('id-ID')}</span>`;
         // Animasi buka box lain satu per satu, hadiah sesuai urutan daftarHadiah
         const allBoxes = Array.from(document.querySelectorAll('.box'));
         let hadiahIdx = 0;
@@ -969,7 +973,7 @@
             b.tabIndex = -1;
             b.querySelector('.prize-icon').innerHTML = shuffledPrizes[i].icon;
             b.querySelector('.mystery-icon').innerHTML = mysteryIcon;
-            b.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.25rem;font-weight:900;color:#ffd700;text-shadow:0 0 6px #00e6a0,0 0 2px #fffbe6;'>Rp ${shuffledPrizes[i].amount.toLocaleString('id-ID')}</span>`;
+            b.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.15rem;font-weight:900;color:#fffbe6;text-shadow:0 0 8px #ffd700,0 0 2px #00e6a0;'>Rp ${shuffledPrizes[i].amount.toLocaleString('id-ID')}</span>`;
             b.classList.remove('selected');
             // Animasi shine dan burst untuk setiap box
             const shine = document.createElement('div');
