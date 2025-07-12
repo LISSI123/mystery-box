@@ -422,9 +422,9 @@
       inset: 0;
       background: rgba(24,28,42,0.92);
       z-index: 90;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       animation: fadeIn .3s;
     }
     .modal, .modal-history {
@@ -439,7 +439,6 @@
       border: 2.5px solid #ffd700;
       animation: popupScale .5s cubic-bezier(.4,2,.3,1);
       filter: drop-shadow(0 0 16px #ffd70022);
-      margin: auto;
     }
     .modal-title {
       font-size: 1.25rem;
@@ -839,59 +838,45 @@
     // Gift box icon (before open)
     const mysteryIcon = `<svg class="mystery-icon" viewBox="0 0 44 44"><rect x="8" y="18" width="28" height="18" rx="6" fill="#ffd700" stroke="#00e6a0" stroke-width="2"/><rect x="14" y="8" width="16" height="10" rx="5" fill="#fffbe6" stroke="#ffd700" stroke-width="1.2"/><rect x="20" y="8" width="4" height="28" rx="2" fill="#00e6a0"/><ellipse cx="22" cy="38" rx="10" ry="3" fill="#fffbe6" opacity="0.18"/></svg>`;
     // Step 1: Form
-const formPanel = document.getElementById('formPanel');
-const gamePanel = document.getElementById('gamePanel');
-const boxGrid = document.getElementById('boxGrid');
-const winPopup = document.getElementById('winPopup');
-const winPrizeText = document.getElementById('winPrizeText');
-const winTitle = document.getElementById('winTitle');
-const winPrizeIcon = document.getElementById('winPrizeIcon');
-const btnShowHistory = document.getElementById('btnShowHistory');
-const modalHistory = document.getElementById('modalHistory');
-const historyTanggal = document.getElementById('historyTanggal');
-const historyUser = document.getElementById('historyUser');
-const historyKupon = document.getElementById('historyKupon');
-const historyPrize = document.getElementById('historyPrize');
-let boxClicked = false;
-let shuffledPrizes = [];
-let lastResult = null;
-let hadiahUtamaGlobal = null; // Hadiah utama yang akan dikirim ke Google Sheet
-// Pastikan semua panel/modal/tombol disembunyikan di awal
-gamePanel.style.display = 'none';
-btnShowHistory.classList.remove('active');
-modalHistory.style.display = 'none';
+    const formPanel = document.getElementById('formPanel');
+    const gamePanel = document.getElementById('gamePanel');
+    const boxGrid = document.getElementById('boxGrid');
+    const winPopup = document.getElementById('winPopup');
+    const winPrizeText = document.getElementById('winPrizeText');
+    const winTitle = document.getElementById('winTitle');
+    const winPrizeIcon = document.getElementById('winPrizeIcon');
+    const btnShowHistory = document.getElementById('btnShowHistory');
+    const modalHistory = document.getElementById('modalHistory');
+    const historyTanggal = document.getElementById('historyTanggal');
+    const historyUser = document.getElementById('historyUser');
+    const historyKupon = document.getElementById('historyKupon');
+    const historyPrize = document.getElementById('historyPrize');
+    let boxClicked = false;
+    let shuffledPrizes = [];
+    let lastResult = null;
+    let hadiahUtamaGlobal = null; // Hadiah utama yang akan dikirim ke Google Sheet
     // Form validation & transition + Google Apps Script integration
-const kuponValidList = ['BLG123', 'BLG456', 'BLG789']; // Ganti sesuai daftar kupon valid Anda
 formPanel.addEventListener('submit', function(e){
   e.preventDefault();
   const userId = document.getElementById('userId').value.trim();
   const kupon = document.getElementById('kupon').value.trim();
   if(userId.length < 3 || kupon.length < 3){
     alert('User ID dan Kode Kupon minimal 3 karakter.');
-    return false;
+    return;
   }
-  // Validasi kupon ke Google Apps Script
-  const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
-    + '?checkKupon=1'
-    + '&kupon=' + encodeURIComponent(kupon);
-  fetch(url)
-    .then(res => res.text())
-    .then(text => {
-      if(text.trim().toLowerCase() === 'valid'){
-        formPanel.style.display = 'none';
-        gamePanel.style.display = 'block';
-        boxClicked = false;
-        lastResult = null;
-        renderGrid();
-      } else {
-        alert('Kode Kupon tidak valid!');
-      }
-    })
-    .catch(err => {
-      alert('Gagal cek kupon. Silakan cek koneksi internet Anda atau hubungi admin.');
-    });
-  return false;
+  // Reset state agar grid bisa diklik setelah submit baru
+  boxClicked = false;
+  lastResult = null;
+  // Setelah submit, render grid. Pengiriman ke Google Sheet dilakukan setelah user klik box.
+  renderGrid();
 });
+        } else {
+          alert(text);
+        }
+      } catch (err) {
+        alert('Gagal terhubung ke server. Coba lagi.');
+      }
+    });
     // Step 2: Render grid
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -927,98 +912,88 @@ formPanel.addEventListener('submit', function(e){
         idxLain++;
       }
       shuffledPrizes.hadiahUtama = hadiahUtama;
-      // Render box dan tambahkan event listener
-      for (let i = 0; i < 9; i++) {
-        const box = document.createElement('div');
-        box.className = 'box';
-        box.innerHTML = `<div class='mystery-icon'></div>`;
-        box.querySelector('.mystery-icon').innerHTML = mysteryIcon;
-        box.tabIndex = 0;
-        box.addEventListener('click', function(){
-          openBox(box, i);
-        });
-        boxGrid.appendChild(box);
-      }
-    }
+function openBox(box, idx){
+  if(boxClicked) return;
+  boxClicked = true;
+  // Hadiah utama SELALU di box yang dipilih, fix 3k/4k/5k
+  shuffledPrizes[idx] = shuffledPrizes.hadiahUtama;
+  // Animate shine
+  const shine = document.createElement('div');
+  shine.className = 'shine';
+  box.appendChild(shine);
+  // Burst effect
+  const burst = document.createElement('div');
+  burst.className = 'burst';
+  burst.innerHTML = `<svg width="70" height="70" viewBox="0 0 70 70" fill="none">
+    <g>
+      <circle cx="35" cy="35" r="10" fill="#ffd700" opacity="0.7"/>
+      <circle cx="35" cy="10" r="2" fill="#fffbe6"/>
+      <circle cx="35" cy="60" r="2" fill="#fffbe6"/>
+      <circle cx="10" cy="35" r="2" fill="#fffbe6"/>
+      <circle cx="60" cy="35" r="2" fill="#fffbe6"/>
+      <circle cx="20" cy="20" r="1.5" fill="#ffd700"/>
+      <circle cx="50" cy="20" r="1.5" fill="#ffd700"/>
+      <circle cx="20" cy="50" r="1.5" fill="#ffd700"/>
+      <circle cx="50" cy="50" r="1.5" fill="#ffd700"/>
+    </g>
+  </svg>`;
+  box.appendChild(burst);
+  setTimeout(function(){
+    // Buka box yang diklik dulu (hadiah utama)
+    box.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div><div class='prize-amount-text'></div>`;
+    box.classList.add('opened');
+    box.classList.add('disabled');
+    box.classList.add('selected');
+    box.tabIndex = -1;
+    box.querySelector('.prize-icon').innerHTML = shuffledPrizes[idx].icon;
+    box.querySelector('.mystery-icon').innerHTML = mysteryIcon;
+    box.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.35rem;font-weight:900;color:#fffbe6;text-shadow:0 0 10px #ffd700,0 0 4px #00e6a0;'>Rp ${shuffledPrizes[idx].amount.toLocaleString('id-ID')}</span>`;
 
-    // Fungsi openBox harus di luar renderGrid
-    async function openBox(box, idx){
-      if(boxClicked) return;
-      boxClicked = true;
-      // Hadiah utama SELALU di box yang dipilih, fix 3k/4k/5k
-      shuffledPrizes[idx] = shuffledPrizes.hadiahUtama;
-      // Animate shine
-      const shine = document.createElement('div');
-      shine.className = 'shine';
-      box.appendChild(shine);
-      // Burst effect
-      const burst = document.createElement('div');
-      burst.className = 'burst';
-      burst.innerHTML = `<svg width="70" height="70" viewBox="0 0 70 70" fill="none">
-        <g>
-          <circle cx="35" cy="35" r="10" fill="#ffd700" opacity="0.7"/>
-          <circle cx="35" cy="10" r="2" fill="#fffbe6"/>
-          <circle cx="35" cy="60" r="2" fill="#fffbe6"/>
-          <circle cx="10" cy="35" r="2" fill="#fffbe6"/>
-          <circle cx="60" cy="35" r="2" fill="#fffbe6"/>
-          <circle cx="20" cy="20" r="1.5" fill="#ffd700"/>
-          <circle cx="50" cy="20" r="1.5" fill="#ffd700"/>
-          <circle cx="20" cy="50" r="1.5" fill="#ffd700"/>
-          <circle cx="50" cy="50" r="1.5" fill="#ffd700"/>
-        </g>
-      </svg>`;
-      box.appendChild(burst);
-      setTimeout(async ()=>{
-        // Buka box yang diklik dulu (hadiah utama)
-        box.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div><div class='prize-amount-text'></div>`;
-        box.classList.add('opened');
-        box.classList.add('disabled');
-        box.classList.add('selected');
-        box.tabIndex = -1;
-        box.querySelector('.prize-icon').innerHTML = shuffledPrizes[idx].icon;
-        box.querySelector('.mystery-icon').innerHTML = mysteryIcon;
-        box.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.35rem;font-weight:900;color:#fffbe6;text-shadow:0 0 10px #ffd700,0 0 4px #00e6a0;'>Rp ${shuffledPrizes[idx].amount.toLocaleString('id-ID')}</span>`;
-        // Kirim data ke Google Sheet
-        const userId = document.getElementById('userId').value.trim();
-        const kupon = document.getElementById('kupon').value.trim();
-        const hadiah = shuffledPrizes[idx].amount;
-        const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
-          + '?userId=' + encodeURIComponent(userId)
-          + '&kupon=' + encodeURIComponent(kupon)
-          + '&hadiah=' + encodeURIComponent(hadiah);
-        try {
-          const res = await fetch(url);
-          const text = await res.text();
-          // Optional: tampilkan notifikasi jika perlu
-          if (text.includes("Selamat")) {
-            // ...existing code...
-          } else {
-            alert(text);
-          }
-        } catch (err) {
-          alert('Gagal terhubung ke server. Coba lagi.');
+    // Kirim data ke Google Sheet
+    var userId = document.getElementById('userId').value.trim();
+    var kupon = document.getElementById('kupon').value.trim();
+    var hadiah = shuffledPrizes[idx].amount;
+    var url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
+      + '?userId=' + encodeURIComponent(userId)
+      + '&kupon=' + encodeURIComponent(kupon)
+      + '&hadiah=' + encodeURIComponent(hadiah);
+    fetch(url)
+      .then(function(res){ return res.text(); })
+      .then(function(text){
+        if (!text.includes("Selamat")) {
+          alert(text);
         }
-        // Animasi buka box lain satu per satu
-        const allBoxes = Array.from(document.querySelectorAll('.box'));
-        let delay = 0;
-        for(let i=0;i<allBoxes.length;i++){
-          if(i===idx) continue;
-          delay += 150;
-          setTimeout(()=>{
-            const b = allBoxes[i];
-            b.innerHTML = `<div class='mystery-icon'></div><div class='prize-icon'></div><div class='prize-amount-text'></div>`;
-            b.classList.add('opened');
-            b.classList.add('disabled');
-            b.classList.remove('selected');
-            b.tabIndex = -1;
-            if (shuffledPrizes[i]) {
+      })
+      .catch(function(){
+        alert('Gagal terhubung ke server. Coba lagi.');
+      });
+
+    // Animasi buka box lain satu per satu
+    var allBoxes = Array.from(document.querySelectorAll('.box'));
+    var delay = 0;
+    for(var i=0;i<allBoxes.length;i++){
+      if(i===idx) continue;
+      delay += 150;
+      setTimeout(function(){
+        // ...existing code for shine and burst animasi box lain...
+      }, delay);
+    }
+    // Box yang diklik tetap menampilkan hadiah utama di win popup
+    setTimeout(function(){
+      showWinPopup(shuffledPrizes[idx]);
+      btnShowHistory.classList.add('active');
+      lastResult = shuffledPrizes[idx];
+    }, delay+400);
+  }, 600);
+}
               b.querySelector('.prize-icon').innerHTML = shuffledPrizes[i].icon;
               b.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.15rem;font-weight:900;color:#fffbe6;text-shadow:0 0 8px #ffd700,0 0 2px #00e6a0;'>Rp ${shuffledPrizes[i].amount.toLocaleString('id-ID')}</span>`;
-            } else {
+            }else{
               b.querySelector('.prize-icon').innerHTML = zonkIcon;
-              b.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.15rem;font-weight:900;color:#ffd700;text-shadow:0 0 8px #ffd700,0 0 2px #232a3a;'>ZONK</span>`;
+              b.querySelector('.prize-amount-text').innerHTML = `<span style='font-size:1.15rem;font-weight:900;color:#ffd700,text-shadow:0 0 8px #ffd700,0 0 2px #232a3a;'>ZONK</span>`;
             }
             b.querySelector('.mystery-icon').innerHTML = mysteryIcon;
+            b.classList.remove('selected');
             // Animasi shine dan burst untuk setiap box
             const shine = document.createElement('div');
             shine.className = 'shine';
@@ -1040,7 +1015,8 @@ formPanel.addEventListener('submit', function(e){
             </svg>`;
             b.appendChild(burst);
             setTimeout(()=>{
-              if(burst) burst.remove();
+              const burstSVG = b.querySelector('.burst');
+              if(burstSVG) burstSVG.remove();
             }, 700);
           }, delay);
         }
@@ -1143,21 +1119,18 @@ formPanel.addEventListener('submit', function(e){
       }
     });
     // Modal History
-// Pastikan tombol dan modal history disembunyikan di awal
-btnShowHistory.classList.remove('active');
-modalHistory.style.display = 'none';
-btnShowHistory.onclick = function(){
-  if(!lastResult) return;
-  const userId = document.getElementById('userId').value.trim();
-  const kupon = document.getElementById('kupon').value.trim();
-  const now = new Date();
-  const tanggal = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-  historyTanggal.textContent = tanggal;
-  historyUser.textContent = userId;
-  historyKupon.textContent = kupon;
-  historyPrize.textContent = `Rp ${lastResult.amount.toLocaleString('id-ID')}`;
-  modalHistory.style.display = 'flex';
-}
+    btnShowHistory.onclick = function(){
+      if(!lastResult) return;
+      const userId = document.getElementById('userId').value.trim();
+      const kupon = document.getElementById('kupon').value.trim();
+      const now = new Date();
+      const tanggal = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+      historyTanggal.textContent = tanggal;
+      historyUser.textContent = userId;
+      historyKupon.textContent = kupon;
+      historyPrize.textContent = `Rp ${lastResult.amount.toLocaleString('id-ID')}`;
+      modalHistory.style.display = 'flex';
+    }
     document.getElementById('btnCloseHistory').onclick = ()=>{modalHistory.style.display='none';};
     modalHistory.addEventListener('click', function(e){
       if(e.target===modalHistory) modalHistory.style.display='none';
