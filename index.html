@@ -857,13 +857,16 @@
     let hadiahUtamaGlobal = null;
 
     // Validasi kupon wajib ke Google Sheet
+    // Pencegahan ganda agar form tidak refresh
     formPanel.addEventListener('submit', function(e){
-      e.preventDefault();
+      if (e) e.preventDefault();
+      // Cegah submit default pada tombol
+      if (window.event) window.event.returnValue = false;
       const userId = document.getElementById('userId').value.trim();
       const kupon = document.getElementById('kupon').value.trim();
       if(userId.length < 3 || kupon.length < 3){
         alert('User ID dan Kode Kupon minimal 3 karakter.');
-        return;
+        return false;
       }
       // Validasi kupon ke Google Apps Script
       const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
@@ -888,6 +891,7 @@
         .catch(() => {
           alert('Gagal terhubung ke server. Silakan coba lagi.');
         });
+      return false;
     });
     // ...existing code...
     // Step 2: Render grid
