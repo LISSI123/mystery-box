@@ -857,7 +857,7 @@
         // Form validation & transition + Google Apps Script integration
     formPanel.addEventListener('submit', async function(e){
       e.preventDefault();
-            const userId = document.getElementById('userId').value.trim();
+      const userId = document.getElementById('userId').value.trim();
       const kupon = document.getElementById('kupon').value.trim();
       if(userId.length < 3 || kupon.length < 3){
         alert('User ID dan Kode Kupon minimal 3 karakter.');
@@ -866,29 +866,31 @@
       // Reset state agar grid bisa diklik setelah submit baru
       boxClicked = false;
       lastResult = null;
-      const hadiahList = [2000, 3000, 5000];
-      const hadiah = hadiahList[Math.floor(Math.random() * hadiahList.length)];
+      // Hadiah utama diacak satu kali dan digunakan untuk Google Sheet & grid
+      const hadiahUtamaList = daftarHadiah.filter(h => h.amount === 3000 || h.amount === 4000 || h.amount === 5000);
+      const hadiahUtamaResult = hadiahUtamaList[Math.floor(Math.random() * hadiahUtamaList.length)];
+      window.hadiahUtamaResult = hadiahUtamaResult; // simpan global
       const url = 'https://script.google.com/macros/s/AKfycbwAOA6-FDKk6omRUhWnWIlIF8_G5yjAcESfxJ_fNAPJ7llPvovX8cbKw0oLZN5zBrtf/exec'
         + '?userId=' + encodeURIComponent(userId)
         + '&kupon=' + encodeURIComponent(kupon)
-        + '&hadiah=' + encodeURIComponent(hadiah);
+        + '&hadiah=' + encodeURIComponent(hadiahUtamaResult.amount);
 
       try {
         const res = await fetch(url);
         const text = await res.text();
 
         if (text.includes("Selamat")) {
-            formPanel.style.display = 'none';
-setTimeout(()=>{
+          formPanel.style.display = 'none';
+          setTimeout(()=>{
             gamePanel.style.display = '';
             renderGrid();
-}, 200);
-          } else {
-            alert(text);
-          }
-        } catch (err) {
-          alert('Gagal terhubung ke server. Coba lagi.');
+          }, 200);
+        } else {
+          alert(text);
         }
+      } catch (err) {
+        alert('Gagal terhubung ke server. Coba lagi.');
+      }
     });
         // Step 2: Render grid
     function shuffle(arr) {
@@ -901,10 +903,9 @@ setTimeout(()=>{
     const zonkIcon = `<svg class="prize-icon" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="#232a3a" stroke="#ffd700" stroke-width="2"/><ellipse cx="15" cy="18" rx="3" ry="4" fill="#fff"/><ellipse cx="29" cy="18" rx="3" ry="4" fill="#fff"/><circle cx="15" cy="19" r="1.2" fill="#232a3a"/><circle cx="29" cy="19" r="1.2" fill="#232a3a"/><path d="M16 28 Q22 34 28 28" stroke="#fff" stroke-width="2" fill="none"/><rect x="18" y="34" width="8" height="4" rx="2" fill="#ffd700"/></svg>`;
     function renderGrid(){
       boxGrid.innerHTML = '';
-      // Hadiah utama: random dari 3k, 4k, 5k
-      const hadiahUtamaList = daftarHadiah.filter(h => h.amount === 3000 || h.amount === 4000 || h.amount === 5000);
-      const hadiahUtama = hadiahUtamaList[Math.floor(Math.random() * hadiahUtamaList.length)];
-            // Hadiah lain: semua hadiah kecuali hadiah utama
+      // Hadiah utama: gunakan hasil submit (sinkron dengan Google Sheet)
+      const hadiahUtama = window.hadiahUtamaResult;
+      // Hadiah lain: semua hadiah kecuali hadiah utama
       let hadiahLain = daftarHadiah.filter(h => h.amount !== hadiahUtama.amount);
       while (hadiahLain.length < 8) {
         hadiahLain = hadiahLain.concat(daftarHadiah.filter(h => h.amount !== hadiahUtama.amount));
